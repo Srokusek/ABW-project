@@ -2,14 +2,16 @@ import pyomo.environ as pyo
 from pyomo.environ import *
 import pandas as pd
 
-def minimize_area(distances, homes: int, locations: int, periods: int, per_period: int, max_distance: float):
+def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: pd.DataFrame, per_period: int, max_distance: float):
   #Model initialization
   model = pyo.ConcreteModel("Minimize Area")
 
   #Sets
-  model.I = pyo.Set(initialize = range(homes))
-  model.J = pyo.Set(initialize = range(locations))
-  model.N = pyo.Set(initialize = range(periods))
+  model.I = pyo.Set(initialize = homes.index)
+  model.J = pyo.Set(initialize = locations.index)
+  model.N = pyo.Set(initialize = periods)
+
+  model.N_hat = pyo.Set(initialize = periods[:-1])
 
   #Variables
   model.z = pyo.Var(model.I, model.N, within=pyo.Binary) #household i is covered in period N
@@ -19,7 +21,7 @@ def minimize_area(distances, homes: int, locations: int, periods: int, per_perio
   model.objective = pyo.Objective(
     sense = pyo.maximize,
     expr = pyo.quicksum(
-      (((model.z[i, n] + model.z[i, n+1]) / 2) for i in model.I for n in model.N[:-1])
+      (((model.z[i, n] + model.z[i, n+1]) / 2) for i in model.I for n in model.N_hat)
     ),
     doc="Maximize the area under the building curve"
   )
@@ -39,16 +41,16 @@ def minimize_area(distances, homes: int, locations: int, periods: int, per_perio
 
   def keep_houses(model, i, n):
     return model.z[i, n+1] >= model.z[i, n]
-  model.keep_houses = pyo.Constraint(model.I, model.N[:-1], rule=keep_houses)
+  model.keep_houses = pyo.Constraint(model.I, model.N_hat, rule=keep_houses)
 
   def keep_facilities(model, j, n):
     return model.x[j, n+1] >= model.x[j, n]
-  model.keep_facilites = pyo.Constraint(model.J, model.N[:-1], rule=keep_facilities)
+  model.keep_facilites = pyo.Constraint(model.J, model.N_hat, rule=keep_facilities)
 
   return model
 
 #Define and run a specific model
-def single_step_area(distances, homes: int, locations: int, periods: int, per_period: int, max_distance: float):
+def single_step_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: int, per_period: int, max_distance: float):
   #Initialize the model
   model = minimize_area(
     distances=distances,
@@ -72,8 +74,8 @@ def single_step_area(distances, homes: int, locations: int, periods: int, per_pe
   x_result = [[pyo.value(model.x[j, n]) for j in model.J] for n in model.N]
   z_result = [[pyo.value(model.z[i, n]) for i in model.I] for n in model.N]
 
-  last_z = z_result[-1]
-  last_x = x_result[-1]
+  all_z = z_result
+  all_x = x_result
   building_curve = z_result
 
-  return last_z, last_x, building_curve
+  return all_z, all_x, building_curve
