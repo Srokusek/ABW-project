@@ -6,7 +6,7 @@ from visuializer import show_facility_location
 data_basic = pd.read_excel("data/Data Ermera Timor Leste.xlsx", sheet_name=None)
 
 #data constants
-distances = data_basic["Distances"]
+distances = data_basic["Distances"].drop(columns=["Unnamed: 0"])
 homes = data_basic["Homes"]
 locations = data_basic["Potential locations"]
 periods_df = pd.DataFrame([1,2,3,4,5,6])
