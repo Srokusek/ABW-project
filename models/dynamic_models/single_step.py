@@ -3,7 +3,7 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
-def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: pd.DataFrame, per_period: int, max_distance: float, vpop = None):
+def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: pd.DataFrame, per_period: int, max_distance: float, open_facilities: pd.DataFrame, vpop = None):
   #Model initialization
   model = pyo.ConcreteModel("Minimize Area")
 
@@ -33,7 +33,7 @@ def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.Da
   #Constraints
   def open_max_n_per(model, n):
     return pyo.inequality(
-      0, pyo.quicksum(model.x[j, n] for j in model.J), n * per_period
+      0, pyo.quicksum(model.x[j, n] for j in model.J if open_facilities[j] != 1), n * per_period
     )
   model.open_max = pyo.Constraint(model.N, rule=open_max_n_per) #in each period n there is n*per_period facilities open
 
@@ -51,10 +51,14 @@ def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.Da
     return model.x[j, n+1] >= model.x[j, n]
   model.keep_facilites = pyo.Constraint(model.J, model.N_hat, rule=keep_facilities)
 
+  def opened_facilities(model, j):
+    return(model.x[j, 1] >= open_facilities[j])
+  model.opened_facilities = pyo.Constraint(model.J, rule=opened_facilities)
+
   return model
 
 #Define and run a specific model
-def single_step_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: int, per_period: int, max_distance: float, vpop = None):
+def single_step_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: int, per_period: int, max_distance: float, open_facilities: pd.DataFrame, vpop = None):
   #Initialize the model
   model = minimize_area(
     distances=distances,
@@ -63,6 +67,7 @@ def single_step_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd
     periods=periods,
     per_period=per_period,
     max_distance=max_distance,
+    open_facilities=open_facilities,
     vpop = vpop
   )
 
