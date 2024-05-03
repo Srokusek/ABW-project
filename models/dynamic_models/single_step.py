@@ -3,7 +3,14 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
-def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: pd.DataFrame, per_period: int, max_distance: float, open_facilities: pd.DataFrame, vpop = None):
+def minimize_area(distances: pd.DataFrame, 
+                  homes: pd.DataFrame, 
+                  locations: pd.DataFrame, 
+                  periods: pd.DataFrame, 
+                  per_period: int, 
+                  max_distance: float, 
+                  open_facilities: pd.DataFrame, 
+                  vpop = None):
   #Model initialization
   model = pyo.ConcreteModel("Minimize Area")
 
@@ -58,7 +65,14 @@ def minimize_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.Da
   return model
 
 #Define and run a specific model
-def single_step_area(distances: pd.DataFrame, homes: pd.DataFrame, locations: pd.DataFrame, periods: int, per_period: int, max_distance: float, open_facilities: pd.DataFrame, vpop = None):
+def single_step_area(distances: pd.DataFrame, 
+                     homes: pd.DataFrame, 
+                     locations: pd.DataFrame, 
+                     periods: int, 
+                     per_period: int, 
+                     max_distance: float, 
+                     open_facilities: pd.DataFrame, 
+                     vpop = None):
   #Initialize the model
   model = minimize_area(
     distances=distances,
