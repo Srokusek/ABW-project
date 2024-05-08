@@ -1,17 +1,31 @@
 import numpy as np
+import pandas as pd
 
-def GenerateFacilityLocationInstance(nofFacilities, nofCustumers, size):
-    facilities = range(nofFacilities)
-    customers = range(nofCustumers)
-    xC = np.random.randint(0, size, nofCustumers)
-    yC = np.random.randint(0, size, nofCustumers)
-    xF = np.random.randint(0, size, nofFacilities)
-    yF = np.random.randint(0, size, nofFacilities)
+def generate_facility_location_instance(n_facilities, n_customers, grid_size):
+    # Generate random floating-point coordinates for facilities and customers
+    facilities = pd.DataFrame({
+        "Grid_Lat": np.random.uniform(0, grid_size, n_facilities),
+        "Grid_Lon": np.random.uniform(0, grid_size, n_facilities),
+        "is_built": 0
+    })
 
-    installation = np.random.randint(1000, 2000, nofFacilities)
+    customers = pd.DataFrame({
+        "Pop_Lat": np.random.uniform(0, grid_size, n_customers),
+        "Pop_Lon": np.random.uniform(0, grid_size, n_customers),
+        "population": np.random.poisson(15, n_customers) * np.random.poisson(10, n_customers)
+    })
 
-    dist = lambda i, j: ((xC[i] - xF[j]) ** 2 + (yC[i] - yF[j]) ** 2)
+    # Create arrays of facility and customer coordinates for vectorized operations
+    facility_coords = facilities[["Grid_Lon", "Grid_Lat"]].to_numpy()
+    customer_coords = customers[["Pop_Lon", "Pop_Lat"]].to_numpy()
 
-    service = [[dist(i, j) for j in facilities] for i in customers]
+    # Create the service DataFrame to hold squared distances
+    service = pd.DataFrame(index=customers.index, columns=facilities.index, dtype=float)
 
-    return installation, service, xC, yC, xF, yF
+    # Compute squared distances in a vectorized manner
+    for fac_idx, facility in enumerate(facility_coords):
+        diff = customer_coords - facility  # Array of differences
+        squared_distances = (diff ** 2).sum(axis=1)  # Squared Euclidean distances
+        service.iloc[:, fac_idx] = squared_distances
+
+    return service, customers, facilities
