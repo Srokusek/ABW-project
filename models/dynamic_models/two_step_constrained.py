@@ -27,7 +27,7 @@ def basic_model(distances: pd.DataFrame,
   model.objective = pyo.Objective(
     sense=pyo.maximize,
     expr=pyo.quicksum(
-      model.z[i] for i in model.I
+      vpop[i] * model.z[i] for i in model.I
     )
   )
 
@@ -111,7 +111,7 @@ def minimize_area_constrained(distances: pd.DataFrame,
   model.opened_facilities = pyo.Constraint(model.J, rule=opened_facilities)
 
   def keep_optimum(model):
-    return (pyo.quicksum(model.z[i,periods.iloc[-1]] for i in model.I) == optimum)
+    return (pyo.quicksum(model.z[i,periods.iloc[-1]] * vpop[i] for i in model.I) == optimum)
   model.optimum = pyo.Constraint(rule=keep_optimum)
 
   return model
@@ -146,7 +146,7 @@ def two_step_constrained(distances: pd.DataFrame,
     raise RuntimeError("Solver failed to find a solution")
   
   #get the end optimum value
-  optimum = sum([pyo.value(model_step_one.z[i]) for i in model_step_one.I])
+  optimum = sum([pyo.value(model_step_one.z[i] * vpop[i]) for i in model_step_one.I])
 
   #initialize second model with calculated optimum
   model_step_two = minimize_area_constrained(
@@ -169,10 +169,10 @@ def two_step_constrained(distances: pd.DataFrame,
   
   #collect results
   x_result = [[pyo.value(model_step_two.x[j, n]) for j in model_step_two.J] for n in model_step_two.N]
-  z_result = [[pyo.value(model_step_two.z[i, n]) for i in model_step_two.I] for n in model_step_two.N]
+  z_result = [[pyo.value(model_step_two.z[i, n] * vpop[i]) for i in model_step_two.I] for n in model_step_two.N]
 
   all_z = z_result
   all_x = x_result
-  building_curve = z_result
+  building_curve = [sum(sublist) for sublist in z_result]
 
   return all_z, all_x, building_curve

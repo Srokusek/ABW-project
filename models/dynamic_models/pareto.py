@@ -27,7 +27,7 @@ def basic_model(distances: pd.DataFrame,
   model.objective = pyo.Objective(
     sense=pyo.maximize,
     expr=pyo.quicksum(
-      model.z[i] for i in model.I
+      vpop[i] * model.z[i] for i in model.I
     )
   )
 
@@ -83,10 +83,10 @@ def get_pareto_curve(distances: pd.DataFrame,
 
     #save results
     x_result.append([pyo.value(model.x[j]) for j in model.J])
-    z_result.append([pyo.value(model.z[i]) for i in model.I])
+    z_result.append([pyo.value(model.z[i] * vpop[i]) for i in model.I])
 
   all_z = z_result
   all_x = x_result
-  pareto_curve = z_result
+  pareto_curve = [sum(sublist) for sublist in z_result]
 
   return all_z, all_x, pareto_curve

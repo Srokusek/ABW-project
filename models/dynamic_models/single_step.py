@@ -96,10 +96,10 @@ def single_step_area(distances: pd.DataFrame,
   
   #collect results
   x_result = [[pyo.value(model.x[j, n]) for j in model.J] for n in model.N]
-  z_result = [[pyo.value(model.z[i, n]) for i in model.I] for n in model.N]
+  z_result = [[pyo.value(model.z[i, n] * vpop[i]) for i in model.I] for n in model.N]
 
   all_z = z_result
   all_x = x_result
-  building_curve = z_result
+  building_curve = [sum(sublist) for sublist in z_result]
 
   return all_z, all_x, building_curve
