@@ -46,7 +46,7 @@ def minimize_area(distances: pd.DataFrame,
 
   def max_distance_n_km(model, i, n):
     return sum(
-      model.x[j, n] for j in model.J if distances.iloc[i,j] < max_distance
+      model.x[j, n] for j in model.J if distances[i][j] < max_distance
     ) >= model.z[i, n]
   model.max_distance = pyo.Constraint(model.I, model.N, rule=max_distance_n_km)
 

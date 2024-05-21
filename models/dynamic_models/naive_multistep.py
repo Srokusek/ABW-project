@@ -40,7 +40,7 @@ def basic_model(distances: pd.DataFrame,
 
   def max_distance_n_km(model, i):
     return sum(
-      model.x[j] for j in model.J if distances.iloc[i,j] < max_distance
+      model.x[j] for j in model.J if distances[i][j] < max_distance
     ) >= model.z[i]
   model.max_distance = pyo.Constraint(model.I, rule = max_distance_n_km)
 
