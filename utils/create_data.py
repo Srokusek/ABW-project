@@ -3,6 +3,7 @@ import pandas as pd
 
 def generate_facility_location_instance(n_facilities, n_customers, grid_size):
     # Generate random floating-point coordinates for facilities and customers
+    np.random.seed(44)
     facilities = pd.DataFrame({
         "Grid_Lat": np.random.uniform(0, grid_size, n_facilities),
         "Grid_Lon": np.random.uniform(0, grid_size, n_facilities),
