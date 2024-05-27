@@ -31,7 +31,7 @@ def plot_percentage_differences(pareto_curve, other_curves, labels):
     plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)  # Horizontal line at zero
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)  # Add grid lines
     plt.title("Percentage Difference between Pareto Curve and Other Curves")
-    plt.xlabel("Index")
+    plt.xlabel("Period")
     plt.ylabel("Percentage Difference (%)")
     plt.legend()
     plt.show()

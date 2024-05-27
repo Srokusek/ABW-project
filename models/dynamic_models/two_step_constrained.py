@@ -98,9 +98,9 @@ def minimize_area_constrained(distances: pd.DataFrame,
     ) >= model.z[i, n]
   model.max_distance = pyo.Constraint(model.I, model.N, rule=max_distance_n_km)
 
-  def keep_houses(model, i, n):
-    return model.z[i, n+1] >= model.z[i, n]
-  model.keep_houses = pyo.Constraint(model.I, model.N_hat, rule=keep_houses)
+  #def keep_houses(model, i, n):
+  #  return model.z[i, n+1] >= model.z[i, n]
+  #model.keep_houses = pyo.Constraint(model.I, model.N_hat, rule=keep_houses)
 
   def keep_facilities(model, j, n):
     return model.x[j, n+1] >= model.x[j, n]
