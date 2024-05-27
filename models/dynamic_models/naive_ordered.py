@@ -81,7 +81,7 @@ def minimize_area_limited(distances: pd.DataFrame,
   model.objective = pyo.Objective(
     sense = pyo.maximize,
     expr = pyo.quicksum(
-      ((vpop[i] * (model.z[i, n] + model.z[i, n+1]) / 2) for i in model.I for n in model.N_hat)
+      ((vpop[i] * model.z[i, n]) for i in model.I for n in model.N_hat)
     ),
     doc="Maximize the area under the building curve"
   )
