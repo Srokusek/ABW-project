@@ -3,6 +3,10 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
+# 
+# The single step model solves the new dynamic model in a single step, focusing on coverage over time rather then maximizing coverage at any one period
+# 
+
 def minimize_area(distances: pd.DataFrame, 
                   homes: pd.DataFrame, 
                   locations: pd.DataFrame, 
@@ -49,10 +53,6 @@ def minimize_area(distances: pd.DataFrame,
       model.x[j, n] for j in model.J if distances[i][j] < max_distance
     ) >= model.z[i, n]
   model.max_distance = pyo.Constraint(model.I, model.N, rule=max_distance_n_km)
-
-  #def keep_houses(model, i, n):
-  #  return model.z[i, n+1] >= model.z[i, n]
-  #model.keep_houses = pyo.Constraint(model.I, model.N_hat, rule=keep_houses)
 
   def keep_facilities(model, j, n):
     return model.x[j, n+1] >= model.x[j, n]

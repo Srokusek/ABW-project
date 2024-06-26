@@ -13,7 +13,7 @@ def generate_facility_location_instance(n_facilities, n_customers, grid_size):
     customers = pd.DataFrame({
         "Pop_Lat": np.random.uniform(0, grid_size, n_customers),
         "Pop_Lon": np.random.uniform(0, grid_size, n_customers),
-        "population": np.random.poisson(15, n_customers) * np.random.poisson(10, n_customers)
+        "population": np.random.poisson(15, n_customers) * np.random.poisson(10, n_customers) # This determines the random size distribution of households
     })
 
     # Create arrays of facility and customer coordinates for vectorized operations

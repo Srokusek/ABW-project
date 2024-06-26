@@ -3,6 +3,10 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
+# 
+# Calculating the pareto curve is done by solving the the basic model for each period, where in each period it is solved for the number of facilities that should have been built up to that point
+# 
+
 def basic_model(distances: pd.DataFrame, 
                 homes: pd.DataFrame, 
                 locations: pd.DataFrame, 

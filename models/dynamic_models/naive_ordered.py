@@ -3,6 +3,10 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
+# 
+# The ordered model works by solving the basic model for the total number facilities to be added. Only the selected facilities and affected households are then passed on to the new dynamic model
+# 
+
 def basic_model(distances: pd.DataFrame, 
                 homes: pd.DataFrame, 
                 locations: pd.DataFrame, 

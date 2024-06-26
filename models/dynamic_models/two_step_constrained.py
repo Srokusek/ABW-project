@@ -3,6 +3,11 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
+# 
+# The two step model works by first solving the basic model for the total amount of facilities to be added, then using the found optimal value in the new dynamic model. 
+# In this instance, a optimality at least period was added to the new dynamic model
+#
+
 def basic_model(distances: pd.DataFrame, 
                 homes: pd.DataFrame, 
                 locations: pd.DataFrame, 

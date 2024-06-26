@@ -9,21 +9,21 @@ current_facilities.columns = ["Pop_Lat", "Pop_Lon", "Population", "Grid_Lat", "G
 data_potential = pd.read_csv("./data/ermera_full/grid.csv")
 data_potential["is_built"] = 0
 
-#merge data to include built facilities
+# Merge data to include built facilities
 data = pd.concat([data_potential, current_facilities], ignore_index=True)
 
-#collect unique households and potential facilities
+# Collect unique households and potential facilities
 populations = data[["Pop_Lat", "Pop_Lon", "Population"]].drop_duplicates().reset_index().drop(columns=["index"])
 facilities = data[["Grid_Lat", "Grid_Lon", "is_built"]].drop_duplicates().reset_index().drop(columns=["index"])
 
-#initialize distances matrix
+# Initialize distances matrix
 distances = pd.DataFrame(
     columns=facilities.index.astype(int),
     index=populations.index.astype(int),
     data=np.nan
 )
 
-#populate distances matrix
+# Populate distances matrix
 for i, population in populations.iterrows():
     for j, facility in facilities.iterrows():
         matching_row = data[
@@ -36,10 +36,10 @@ for i, population in populations.iterrows():
         if not matching_row.empty:
             distances.at[i,j] = matching_row.iloc[0]["Distance_KM"]
 
-#replace any potentially missing values by a really high distance value
+# Replace any potentially missing values by a really high distance value
 distances.replace(np.nan, 1000, inplace=True)
 
-#export and save the data for future use
+# Export and save the data for future use
 populations.to_csv("./data/ermera_full/processed/populations.csv")
 facilities.to_csv("./data/ermera_full/processed/facilities.csv")
 distances.to_csv("./data/ermera_full/processed/distances.csv")

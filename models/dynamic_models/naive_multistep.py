@@ -3,6 +3,10 @@ from pyomo.environ import *
 import pandas as pd
 import numpy as np
 
+# 
+# The naive model works by solving the basic models, then setting the selected facilities as built, then solving again. At each step building as many facilities as should be built per each period
+# 
+
 def basic_model(distances: pd.DataFrame, 
                 homes: pd.DataFrame, 
                 locations: pd.DataFrame, 
